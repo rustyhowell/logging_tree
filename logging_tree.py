@@ -75,9 +75,13 @@ def print_logging_tree(handlers=True):
 if __name__ == '__main__':
 
     logging.basicConfig()
+
     logging.getLogger('a.b')
     logging.getLogger('a.b.c.d').addHandler(logging.FileHandler('/tmp/my.log'))
-    logging.getLogger('x.y')
     logging.getLogger('a.b').addHandler(logging.StreamHandler())
     logging.getLogger('a.f')
+
+    import logging.handlers  # More handlers are in here
+    logging.getLogger('x.y').addHandler(logging.handlers.DatagramHandler('192.168.1.3', 9999))
+
     print_logging_tree(handlers=True)
