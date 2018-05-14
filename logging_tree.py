@@ -20,12 +20,23 @@ def _color(txt, color):
     return '\033[{};{}m{}\033[0m;'.format(bold, idx, txt)
 
 
+def _getFilters(obj):
+    d = OD()
+    for o in obj.filters:
+        d[_color('<Filter {} >'.format(o), 'yellow')] = {}
+    return d
+
 def _getHandlers(logger):
     d = OD()
+
     if isinstance(logger, logging.Logger):
+        for f in logger.filters:
+            d[_color('<Filter {} >'.format(f), 'yellow')] = {}
+
         for h in logger.handlers:
             name = type(h).__name__
-            d[_color('<{}, level={}>'.format(name, h.level), 'blue')] = {}
+            filters = _getFilters(h)
+            d[_color('<{}, level={}>'.format(name, h.level), 'blue')] = filters
 
     return  d
 
@@ -78,10 +89,13 @@ if __name__ == '__main__':
 
     logging.getLogger('a.b')
     logging.getLogger('a.b.c.d').addHandler(logging.FileHandler('/tmp/my.log'))
+    logging.getLogger('a.b.c.d').handlers[0].addFilter(logging.Filter())
+
     logging.getLogger('a.b').addHandler(logging.StreamHandler())
     logging.getLogger('a.f')
 
     import logging.handlers  # More handlers are in here
     logging.getLogger('x.y').addHandler(logging.handlers.DatagramHandler('192.168.1.3', 9999))
+    logging.root.addFilter('a.b.c')
 
     print_logging_tree(handlers=True)
