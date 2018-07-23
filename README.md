@@ -37,7 +37,7 @@ Then all you have to do is change one line of code:
     DEBUG = False
 
 This is helpful. It cuts down on the churn of changing a bunch of lines of
-code, but it's still not great. You still have to modify your the to enable
+code, but it's still not great. You still have to modify your code to enable
 and disable the debug statements. Also, what if you are trying to debug
 several code files at the same time?  You're going to have to edit each
 of those files to turn on debugging.  So this still does not scale well.
@@ -96,16 +96,26 @@ module does all of this, and more. Using it is easy.
     import logging
     logging.debug('This is a debug statement')
 
-That's it. Now there is a lot to unpack here, and I've used a cool shortcut.
-So let's do it one piece at a time. First, let's expand the shortcut:
+That's it. Now there is a lot to unpack here, and I've used a cool shortcut: `logging.debug()`.
+So let's do it again without the short cut, one piece at a time:
 
     import logging
-    root = logging.getLogger()
-    stdout = logging.StreamHandler()
-    root.addHandler(stdout)
-    root.debug('This is a debug statement')
+    root = logging.getLogger()              # Get the root logger
+    stdout = logging.StreamHandler()        # Create a StreamHandler, ie print to the console
+    root.addHandler(stdout)                 # Add the StreamHandler to the root logger
+    root.debug('This is a debug statement') # Log a message to the root logger.
 
-As you can see, this is quite a bit longer than the last example.
+As you can see, this is quite a bit longer than the last example. `logging.debug()` or `.error()`,
+`.info()`, etc. will automatically setup the minimum logging if it's not already setup. I.e.
+add a StreamHandler to the root logger. Another shortcut is `logging.basicConfig()`, which is the
+same but with out actually logging a message. IE it's missing the final `root.debug()` statement at
+end.
+
+So in your main function, you just setup your logging how you need it.
+
+    if __name__ == '__main__':
+        logging.basicConfig(level=logging.INFO)
+        logging.info("Launching process")
 
 ### In library code
 
