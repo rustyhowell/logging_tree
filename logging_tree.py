@@ -17,7 +17,7 @@ colors = {
 
 def _color(txt, color):
     bold, idx = colors[color]
-    return '\033[{};{}m{}\033[0m;'.format(bold, idx, txt)
+    return '\033[{};{}m{}\033[0m'.format(bold, idx, txt)
 
 
 def _getFilters(obj):
@@ -79,9 +79,7 @@ def print_logging_tree(handlers=True):
         loggers[loggername] = cur_logger
 
     LA = asciitree.LeftAligned()
-    print('')
-    print(LA(tree))
-    print('')
+    print('\n{}\n'.format(LA(tree)))
 
 if __name__ == '__main__':
 
