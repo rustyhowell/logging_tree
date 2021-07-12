@@ -6,9 +6,9 @@ in your code
 ![screenshot of logging_tree](screenshot.png "logging_tree")
 
 
-Logger objects are shown in green (placeholders are in white)
-Filter objects are shown in yellow
-Handlers objects are shown in Blue
+* Logger objects are shown in green (placeholders are in white)
+* Handlers objects are shown in Blue
+* Filter objects are shown in yellow
 
 
 ## Installing and using the logging_tree utility

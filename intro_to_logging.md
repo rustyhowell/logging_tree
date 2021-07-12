@@ -94,22 +94,23 @@ Python's builtin [logging](https://docs.python.org/3/howto/logging.html)
 module does all of this, and more. Using it is easy.
 
     import logging
-    logging.debug('This is a debug statement')
+    logging.warning('This is a warning statement')
 
-That's it. Now there is a lot to unpack here, and I've used a cool shortcut: `logging.debug()`.
-So let's do it again without the short cut, one piece at a time:
+That's it. Now there is a lot to unpack here, and I've used a cool shortcut:
+`logging.debug()`. So let's do it again without the short cut, one piece at a
+time:
 
     import logging
     root = logging.getLogger()              # Get the root logger
     stdout = logging.StreamHandler()        # Create a StreamHandler, ie print to the console
     root.addHandler(stdout)                 # Add the StreamHandler to the root logger
-    root.debug('This is a debug statement') # Log a message to the root logger.
+    root.debug('This is a warning statement') # Log a message to the root logger.
 
-As you can see, this is quite a bit longer than the last example. `logging.debug()` or `.error()`,
-`.info()`, etc. will automatically setup the minimum logging if it's not already setup. I.e.
-add a StreamHandler to the root logger. Another shortcut is `logging.basicConfig()`, which is the
-same but with out actually logging a message. IE it's missing the final `root.debug()` statement at
-end.
+As you can see, this is quite a bit longer than the last example. `logging.debug()`
+or `.error()`, `.info()`, etc. will automatically setup the minimum logging if
+it's not already setup. I.e. add a StreamHandler to the root logger. Another
+shortcut is `logging.basicConfig()`, which is the same but with out actually
+logging a message. IE it's missing the final `root.debug()` statement at end.
 
 So in your main function, you just setup your logging how you need it.
 
@@ -131,12 +132,17 @@ logging system.
         def __init__(self):
             logger.debug('creating new MyLib instance')
 
-The user of the library gets to say what to do with messages:
+The user of the library gets to say what to do with messages. For example, if a
+user wants to see debug message from a library:
 
     import logging
     import mylib
 
     logging.basicConfig(file='/tmp/my.log')
+
+    # Modify the logger for the module 'mylib'. Set it to debug
+    logging.getLogger('mylib').setLevel(logging.DEBUG)
     m = mylib.MyLib()
 
-
+    # Quiet the urllib3 logger (used by the requests package).
+    logging.getLogger('urllib3').setLevel(logging.ERROR)
