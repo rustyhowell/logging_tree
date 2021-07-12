@@ -5,7 +5,7 @@ import asciitree
 from collections import OrderedDict as OD
 
 
-colors = {
+__colors = {
           'red': (1, 31),
           'green': (1, 32),
           'yellow': (0, 33),
@@ -15,33 +15,33 @@ colors = {
           'white': (0, 37),
           }
 
-def _color(txt, color):
-    bold, idx = colors[color]
+def __color(txt, color):
+    bold, idx = __colors[color]
     return '\033[{};{}m{}\033[0m'.format(bold, idx, txt)
 
 
-def _getFilters(obj):
+def __getFilters(obj):
     d = OD()
     for o in obj.filters:
-        d[_color('<Filter {} >'.format(o), 'yellow')] = {}
+        d[__color('<Filter {} >'.format(o), 'yellow')] = {}
     return d
 
-def _getHandlers(logger):
+def __getHandlers(logger):
     d = OD()
 
     if isinstance(logger, logging.Logger):
         for f in logger.filters:
-            d[_color('<Filter {} >'.format(f), 'yellow')] = {}
+            d[__color('<Filter {} >'.format(f), 'yellow')] = {}
 
         for h in logger.handlers:
             name = type(h).__name__
-            filters = _getFilters(h)
-            d[_color('<{}, level={}>'.format(name, h.level), 'blue')] = filters
+            filters = __getFilters(h)
+            d[__color('<{}, level={}>'.format(name, h.level), 'blue')] = filters
 
     return  d
 
 
-def _make_tree_label(logger):
+def __make_tree_label(logger):
     level = { 0  : 'notset',
               10 : 'debug',
               20 : 'info',
@@ -49,14 +49,20 @@ def _make_tree_label(logger):
               40 : 'error',
               50 : 'critical',
               }
-    label = _color('<Logger {}, level={},{} >'.format(logger.name, logger.level, level[logger.level]), 'green')
+    label = __color('<Logger {}, level={},{} >'.format(logger.name, logger.level, level[logger.level]), 'green')
 
     return label
 
-def print_logging_tree(handlers=True):
-    root = _getHandlers(logging.root) if handlers else {}
+def print_logging_tree(include_handlers=True):
+    """ Prints the hierarchy of loggers, handlers, and filters
+
+    Args:
+        include_handlers:  Include logging handlers and filters in the output
+
+    """
+    root = __getHandlers(logging.root) if include_handlers else {}
     tree = OD()
-    tree[_make_tree_label(logging.root)] = root
+    tree[__make_tree_label(logging.root)] = root
     loggers = {'root': root}
 
     keys = sorted(logging.Logger.manager.loggerDict.keys())
@@ -68,18 +74,19 @@ def print_logging_tree(handlers=True):
         parentlogger = loggers[parent]
         logger = logging.Logger.manager.loggerDict[loggername]
         if isinstance(logger, logging.Logger):
-            cur_colorname = _make_tree_label(logger)
+            cur_colorname = __make_tree_label(logger)
         elif isinstance(logger, logging.PlaceHolder):
-            cur_colorname = _color('<Logger {}>'.format(loggername), 'white')
+            cur_colorname = __color('<Logger {}>'.format(loggername), 'white')
         else:
             assert False
 
-        cur_logger = _getHandlers(logger) if handlers else {}
+        cur_logger = __getHandlers(logger) if include_handlers else {}
         parentlogger[cur_colorname] = cur_logger
         loggers[loggername] = cur_logger
 
     LA = asciitree.LeftAligned()
     print('\n{}\n'.format(LA(tree)))
+
 
 if __name__ == '__main__':
 
@@ -96,4 +103,4 @@ if __name__ == '__main__':
     logging.getLogger('x.y').addHandler(logging.handlers.DatagramHandler('192.168.1.3', 9999))
     logging.root.addFilter('a.b.c')
 
-    print_logging_tree(handlers=True)
+    print_logging_tree(include_handlers=True)

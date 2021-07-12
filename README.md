@@ -140,5 +140,22 @@ The user of the library gets to say what to do with messages:
     m = mylib.MyLib()
 
 
+## Using the logging_tree utility
 
 
+git clone
+
+    <Logger root, level=30,warning>
+     +-- <Filter a.b.c >
+     +-- <StreamHandler, level=0>
+     +-- <Logger a>
+     |   +-- <Logger a.b, level=0,notset >
+     |   |   +-- <StreamHandler, level=0>
+     |   |   +-- <Logger a.b.c>
+     |   |       +-- <Logger a.b.c.d, level=0,notset >
+     |   |           +-- <FileHandler, level=0>
+     |   |               +-- <Filter <logging.Filter object at 0x7ff16f5cfee0> >
+     |   +-- <Logger a.f, level=0,notset >
+     +-- <Logger x>
+         +-- <Logger x.y, level=0,notset >
+             +-- <DatagramHandler, level=0>
